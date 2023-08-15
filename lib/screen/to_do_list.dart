@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/screen/to_do_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:todo/ui/auth/login.dart';
+import 'package:todo/utils/utility.dart';
 
 class ToDoList extends StatefulWidget {
   const ToDoList({super.key});
@@ -12,6 +15,7 @@ class ToDoList extends StatefulWidget {
 }
 
 class _ToDoListState extends State<ToDoList> {
+  FirebaseAuth auth = FirebaseAuth.instance;
   void initState() {
     super.initState();
     fetchData();
@@ -24,6 +28,18 @@ class _ToDoListState extends State<ToDoList> {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Todo List")),
+        actions: [
+          IconButton(
+              onPressed: () {
+                auth.signOut().then((value) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                }).onError((error, stackTrace) {
+                  Utils().toastMessage(error.toString(), false);
+                });
+              },
+              icon: Icon(Icons.login_outlined))
+        ],
       ),
       body: Visibility(
         visible: isLoading,
